@@ -1,0 +1,959 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -1056,
+        -272
+      ],
+      "id": "89cef20a-d40a-4f3d-abc3-9f2412529f34",
+      "name": "When chat message received",
+      "webhookId": "e567eac3-fa23-442f-836e-91c8cbc42cea"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -992,
+        -64
+      ],
+      "id": "ba422579-1b0c-4d66-a206-887c0186950a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "pJTmyAQm7nNEjDoI",
+          "name": "OpenAI account 3"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -832,
+        -128
+      ],
+      "id": "d39800d3-61f5-467c-96bf-0aed00cd9549",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"vehicle_model\": { \"type\": \"string\" },\n    \"battery_percentage\": { \"type\": \"number\" },\n    \"current_location\": { \"type\": \"string\" },\n    \"destination\": { \"type\": \"string\" }\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -672,
+        -80
+      ],
+      "id": "05f6b713-03a6-4756-832d-3e6387497ce5",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -240,
+        32
+      ],
+      "id": "d4f6d2a2-8915-4d59-ac99-c3322f920607",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "pJTmyAQm7nNEjDoI",
+          "name": "OpenAI account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"vehicle_model\": {\n      \"type\": [\"string\", \"null\"]\n    },\n    \"battery_capacity_kwh\": {\n      \"type\": [\"number\", \"null\"]\n    },\n    \"full_range_km\": {\n      \"type\": [\"number\", \"null\"]\n    },\n    \"charging_type\": {\n      \"type\": [\"string\", \"null\"]\n    }\n  },\n  \"required\": [\n    \"vehicle_model\",\n    \"battery_capacity_kwh\",\n    \"full_range_km\",\n    \"charging_type\"\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        192,
+        -96
+      ],
+      "id": "20a87159-3788-4de5-bb83-b9ab3fd09599",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -96,
+        0
+      ],
+      "id": "85a81322-598b-4961-baf0-97d1b80da608",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.tavily.com/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "=json",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "api_key",
+              "value": "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"
+            },
+            {
+              "name": "query",
+              "value": "={{$json.output.vehicle_model + \" battery capacity kWh range charging type\"}}"
+            },
+            {
+              "name": "search_depth",
+              "value": "basic"
+            },
+            {
+              "name": "max_results",
+              "value": "5"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -336,
+        -176
+      ],
+      "id": "a459240d-caa1-4822-9ed2-56e1159662bc",
+      "name": "Finding the carvSpecs"
+    },
+    {
+      "parameters": {
+        "url": "https://api.openrouteservice.org/geocode/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "api_key",
+              "value": "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImMwZDdiYzgxYzBjOTRjMWFhY2RiNTMxMDlmNzc3NWVhIiwiaCI6Im11cm11cjY0In0="
+            },
+            {
+              "name": "text",
+              "value": "={{$json.output.current_location}}"
+            },
+            {
+              "name": "size",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -560,
+        -672
+      ],
+      "id": "537bf00f-32dd-47e8-9dc1-f61f504490a4",
+      "name": "Origin Geocode"
+    },
+    {
+      "parameters": {
+        "url": "https://api.openrouteservice.org/geocode/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "api_key",
+              "value": "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImMwZDdiYzgxYzBjOTRjMWFhY2RiNTMxMDlmNzc3NWVhIiwiaCI6Im11cm11cjY0In0="
+            },
+            {
+              "name": "text",
+              "value": "={{$json.output.destination}}"
+            },
+            {
+              "name": "size",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -560,
+        -496
+      ],
+      "id": "2daaca00-4922-4c1d-a21f-47338d7bd5bb",
+      "name": "Destination Geocode"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -224,
+        -592
+      ],
+      "id": "72b3ab85-bc63-49aa-8059-9ec69415ee68",
+      "name": "Geocodes of both origin and destination"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        272,
+        -400
+      ],
+      "id": "09e621f9-de31-41de-9f8c-3b3c688286c0",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst origin = $input.first().json;\nconst destination = $input.last().json;\n\nreturn [{\n  json: {\n    origin_lon: origin.features[0].geometry.coordinates[0],\n    origin_lat: origin.features[0].geometry.coordinates[1]\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        -672
+      ],
+      "id": "95a84894-d0a7-45c0-abb7-6220b274aff5",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst origin = $input.first().json;\nconst destination = $input.last().json;\n\nreturn [{\n  json: {\n    destination_lon: destination.features[0].geometry.coordinates[0],\n    destination_lat: destination.features[0].geometry.coordinates[1]\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        -496
+      ],
+      "id": "81a3719f-ffb2-4a8b-9aca-52e75670f07d",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst midpoint_lat =\n($json.origin_lat + $json.destination_lat) / 2;\n\nconst midpoint_lon =\n($json.origin_lon + $json.destination_lon) / 2;\n\nreturn [{\n  json: {\n    ...$json,\n    midpoint_lat,\n    midpoint_lon\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        96,
+        -768
+      ],
+      "id": "ef943da1-a112-429b-9ca7-118033065a3e",
+      "name": "calculate Midpoint"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openrouteservice.org/v2/directions/driving-car",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImMwZDdiYzgxYzBjOTRjMWFhY2RiNTMxMDlmNzc3NWVhIiwiaCI6Im11cm11cjY0In0="
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n{\n  coordinates: [\n    [$json.origin_lon, $json.origin_lat],\n    [$json.destination_lon, $json.destination_lat]\n  ]\n}\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -48,
+        -544
+      ],
+      "id": "1788b9d9-fc8b-41d5-bc0c-7abbf9c1c1ed",
+      "name": "Distance Calculator"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://overpass-api.de/api/interpreter",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text",
+        "body": "={{$json.overpass_query}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        816,
+        -720
+      ],
+      "id": "7eced8a9-5359-49c6-a1b5-4aec051a1fd2",
+      "name": "EV Station Finder"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        528,
+        -752
+      ],
+      "id": "1cf879fd-8f33-47a4-ad53-964ece354e76",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst search_radius_km = $json.distance_km / 2;\n\nconst query = `\n[out:json];\n(\n  node[\"amenity\"=\"charging_station\"]\n  (around:${search_radius_km * 1000},\n  ${$json.midpoint_lat},\n  ${$json.midpoint_lon});\n);\nout body;\n`;\n\nreturn [{\n  json: {\n    ...$json,\n    overpass_query: query\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        608,
+        -528
+      ],
+      "id": "ad1dd83f-684d-4a74-ad72-df188021b12e",
+      "name": "Code in JavaScript5"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst route = $json.routes[0];\n\nreturn [{\n  json: {\n    distance_km: Math.round(route.summary.distance / 1000),\n    duration_hours: Number((route.summary.duration / 3600).toFixed(1))\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        112,
+        -592
+      ],
+      "id": "341940ba-c247-4d63-979d-9de3ff230d6d",
+      "name": "Extraction of Distance"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: $json\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -512,
+        -192
+      ],
+      "id": "43fda073-eebc-4abc-9757-b7dcc0d446e3",
+      "name": "giving json input"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst data = $json;\n\nconst battery_percentage = data.output.battery_percentage;\nconst full_range_km = data.output.full_range_km;\nconst distance_km = data.distance_km;\n\nconst remaining_range_km =\n(full_range_km * battery_percentage) / 100;\n\nconst can_reach_without_charging =\nremaining_range_km >= distance_km;\n\nreturn [{\n  json: {\n    vehicle_model: data.output.vehicle_model,\n    battery_percentage: data.output.battery_percentage,\n    current_location: data.output.current_location,\n    destination: data.output.destination,\n\n    battery_capacity_kwh: data.output.battery_capacity_kwh,\n    full_range_km: data.output.full_range_km,\n    charging_type: data.output.charging_type,\n\n    distance_km: data.distance_km,\n    duration_hours: data.duration_hours,\n\n    remaining_range_km: Math.round(remaining_range_km),\n\n    can_reach_without_charging: can_reach_without_charging\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        -384
+      ],
+      "id": "b7679fee-db89-4fdc-a556-6230df95f2fa",
+      "name": "making json data"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst stations = $json.elements || [];\n\nconst trip = $('Merge1').first().json;\n\nreturn [{\n  json: {\n    trip: {\n      vehicle_model: trip.vehicle_model,\n      battery_percentage: trip.battery_percentage,\n      current_location: trip.current_location,\n      destination: trip.destination,\n      battery_capacity_kwh: trip.battery_capacity_kwh,\n      full_range_km: trip.full_range_km,\n      charging_type: trip.charging_type,\n      distance_km: trip.distance_km,\n      duration_hours: trip.duration_hours,\n      remaining_range_km: trip.remaining_range_km,\n      can_reach_without_charging: trip.can_reach_without_charging,\n      origin_lat: trip.origin_lat,\n      origin_lon: trip.origin_lon,\n      destination_lat: trip.destination_lat,\n      destination_lon: trip.destination_lon\n    },\n\n    stations: stations.map(station => ({\n      station_name: station.tags?.name || \"Unknown Charger\",\n      operator: station.tags?.operator || \"Unknown\",\n      station_lat: station.lat,\n      station_lon: station.lon,\n      tags: station.tags\n    }))\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        -480
+      ],
+      "id": "0abd21d4-e256-4b36-99c3-fa31c10364f7",
+      "name": "Removing the Duplicates"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"charging_required\": {\n      \"type\": \"boolean\"\n    },\n    \"recommended_station\": {\n      \"type\": \"string\"\n    },\n    \"operator\": {\n      \"type\": \"string\"\n    },\n    \"reason\": {\n      \"type\": \"string\"\n    },\n    \"confidence\": {\n      \"type\": \"string\"\n    },\n    \"alternative_stations\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"station_name\": {\n            \"type\": \"string\"\n          },\n          \"operator\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    }\n  },\n  \"required\": [\n    \"charging_required\",\n    \"recommended_station\",\n    \"operator\",\n    \"reason\",\n    \"confidence\"\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        896,
+        -16
+      ],
+      "id": "7e9adcd2-9e1a-49a4-9121-6ec4201a0e88",
+      "name": "Structured Output Parser2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        576,
+        -64
+      ],
+      "id": "c15f7773-536d-4330-b33a-74779a78c68c",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "pJTmyAQm7nNEjDoI",
+          "name": "OpenAI account 3"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        736,
+        32
+      ],
+      "id": "c3183365-b402-4d27-a849-fca51fe18e36",
+      "name": "Simple Memory2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1024,
+        -208
+      ],
+      "id": "55ead4d6-476d-4d3e-a0fb-6c6a0a8d01b5",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "pJTmyAQm7nNEjDoI",
+          "name": "OpenAI account 3"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        1168,
+        -112
+      ],
+      "id": "a9c55a0d-9944-45cd-82fa-0149102da9cd",
+      "name": "Simple Memory3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Extract the following information from the user message:\n\n- vehicle_model\n- battery_percentage\n- current_location\n- destination\n\nReturn ONLY a JSON object.\n\nUser Message:\n{{ $json.chatInput }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -880,
+        -352
+      ],
+      "id": "c57b74a0-141a-4780-b9f4-640923f147b7",
+      "name": "Extraction Of details"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an EV Specification Extraction Agent.\n\nSearch Results:\n{{ JSON.stringify($json.results) }}\n\nExtract:\n- vehicle_model\n- battery_capacity_kwh\n- full_range_km\n- charging_type\n\nReturn ONLY a JSON object matching this format:\n\n{\n  \"vehicle_model\": \"string\",\n  \"battery_capacity_kwh\": number,\n  \"full_range_km\": number,\n  \"charging_type\": \"string\"\n}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -144,
+        -240
+      ],
+      "id": "ef1d9684-5ad8-4e13-9fbe-72d3e80a6875",
+      "name": "Getting the specifications"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an EV Charging Planner.\n\nTrip Information:\n{{ JSON.stringify($json.trip) }}\n\nAvailable Charging Stations:\n{{ JSON.stringify($json.stations) }}\n\nRules:\n\n1. If can_reach_without_charging is false, charging_required must be true.\n2. If can_reach_without_charging is true, charging_required must be false.\n3. Vehicle requires: {{ $json.trip.charging_type }}\n4. Prefer:\n   - CCS / CCS2 compatible chargers\n   - DC Fast Chargers\n   - Stations with charging power information\n   - Stations located between origin and destination\n   - Public access stations\n\n5. Avoid:\n   - Private stations\n   - Two-wheeler-only charging stations\n   - Battery swap stations\n\nReturn ONLY JSON:\n\n{\n  \"charging_required\": true,\n  \"recommended_station\": \"\",\n  \"operator\": \"\",\n  \"reason\": \"\",\n  \"confidence\": \"high\",\n  \"alternative_stations\": []\n}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        688,
+        -240
+      ],
+      "id": "9650d131-177b-4fd7-bfa1-9b85f0145377",
+      "name": "choosing the station"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an EV Travel Assistant.\n\nConvert the EV planning result into a clear, friendly response for the driver.\n\nInput:\n{{ JSON.stringify($json) }}\n\nRules:\n\n1. Explain whether charging is required.\n2. Mention the recommended charging station.\n3. Explain why it was selected.\n4. Mention alternative stations if available.\n5. Use simple language.\n6. Do not mention confidence scores.\n7. Format the response professionally.\n8. Assume the user is preparing for the trip.\n\nReturn ONLY plain text.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1088,
+        -384
+      ],
+      "id": "352b2b5a-169f-41f1-8845-543dd760a754",
+      "name": "sending the msg"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Extraction Of details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Extraction Of details",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Extraction Of details",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Extraction Of details",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Getting the specifications",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Getting the specifications",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "Getting the specifications",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finding the carvSpecs": {
+      "main": [
+        [
+          {
+            "node": "Getting the specifications",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Origin Geocode": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Destination Geocode": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Geocodes of both origin and destination": {
+      "main": [
+        [
+          {
+            "node": "calculate Midpoint",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Distance Calculator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "making json data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Geocodes of both origin and destination",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Geocodes of both origin and destination",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Distance Calculator": {
+      "main": [
+        [
+          {
+            "node": "Extraction of Distance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EV Station Finder": {
+      "main": [
+        [
+          {
+            "node": "Removing the Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "calculate Midpoint": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript5": {
+      "main": [
+        [
+          {
+            "node": "EV Station Finder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraction of Distance": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "giving json input": {
+      "main": [
+        [
+          {
+            "node": "Finding the carvSpecs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "making json data": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Removing the Duplicates": {
+      "main": [
+        [
+          {
+            "node": "choosing the station",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "choosing the station",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "choosing the station",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "choosing the station",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "sending the msg",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory3": {
+      "ai_memory": [
+        [
+          {
+            "node": "sending the msg",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraction Of details": {
+      "main": [
+        [
+          {
+            "node": "giving json input",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Origin Geocode",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Destination Geocode",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Getting the specifications": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "choosing the station": {
+      "main": [
+        [
+          {
+            "node": "sending the msg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sending the msg": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "5e40fb11-69c5-48ab-90db-1b3db95486b5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "37ba75e405d95ac72bf7516936f45a8b1d98f59362d173df51583febc2cf6d99"
+  },
+  "nodeGroups": [],
+  "id": "e6sXzELCsaZBkjlI",
+  "tags": []
+}
