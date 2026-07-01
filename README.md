@@ -1,5 +1,3 @@
-# Agentic EV Route Planner 🚗⚡
-
 An AI-powered Electric Vehicle (EV) trip planning system built using **n8n**, **OpenAI GPT-5**, **OpenRouteService**, and **OpenStreetMap**.
 
 This project helps EV owners determine whether a journey can be completed with the available battery charge and recommends suitable charging stations when charging is required.
