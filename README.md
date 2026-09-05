@@ -159,8 +159,9 @@ Located along the route and likely supports CCS2 fast charging compatible with T
 ## Author
 
 **Ishwar Nathani**
-
 GitHub: https://github.com/ishwarnathani
 
-Project Repository:
+**Bhavya Bansal**
+GitHub: https://github.com/bansalbhavya2402
+
 
